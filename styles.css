@@ -17,4 +17,7 @@
 @media(max-width:760px){.brand-name{font-size:10px;letter-spacing:.9px}.brand-name i{font-size:7px;letter-spacing:.8px}.home-video{grid-template-columns:1fr;gap:24px;padding:55px 6vw 65px}.home-video-copy h2{font-size:43px}.home-video .video-frame{width:100%;max-width:520px;margin:auto}}
 
 .button{background:#28583f;color:#fff;transition:background .2s}.button:hover{background:#1e4933}.button span{color:#d7e9d6}
+.brand-logo{display:block;flex:none;width:49px;height:66px;object-fit:contain;background:#080706;border:1px solid #bd9a5b;border-radius:4px}.brand-name>span{display:block;font-size:12px;font-weight:600;letter-spacing:1.2px;white-space:nowrap}.site-footer .brand-logo{width:58px;height:78px}.site-footer .brand-name>span{font-size:13px;color:#f7f4ed}.site-footer .brand-name i{font-size:8px}
+@media(max-width:980px){.brand-logo{width:43px;height:58px}.brand-name>span{font-size:11px;letter-spacing:.8px}.site-footer .brand-logo{width:52px;height:70px}}
+@media(max-width:760px){.brand-logo{width:39px;height:52px}.brand-name>span{font-size:10px;letter-spacing:.65px}.brand-name i{font-size:7px}.site-footer .brand-logo{width:48px;height:64px}.site-footer .brand-name>span{font-size:11px}}
 @media(max-width:760px){.hero h1{font-size:clamp(48px,13vw,58px)}.brand-name{font-size:11px;letter-spacing:.9px}.brand-name i{font-size:7.5px}.float-actions{right:12px;bottom:12px;gap:7px}.float-button{width:42px;height:42px;min-width:42px;padding:0;border-radius:50%;gap:0}.float-button span{display:none}}

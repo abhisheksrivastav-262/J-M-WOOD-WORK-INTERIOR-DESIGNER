@@ -19,6 +19,14 @@ const projects = [
   {file:'living-room-ivory.jpg',title:'Understated, and entirely yours',category:'living',label:'LIVING'},
   {file:'bedroom-classic.jpg',title:'A bedroom with character',category:'bedroom',label:'BEDROOM'},
 ];
+const workVideos = [
+  {file:'wardrobe-design.mp4',poster:'wardrobe-design.jpg',title:'Wardrobe and media wall',label:'WARDROBE · BEDROOM WOODWORK',description:'A walkthrough of a custom wardrobe and bedroom wall finish.',service:'wardrobe',duration:'00:26'},
+  {file:'work-video-02.mp4',poster:'work-video-02.jpg',title:'Curved reception counter',label:'CUSTOM RECEPTION COUNTER',description:'A close look at a curved counter and its stone finish.',service:'living',duration:'00:26'},
+  {file:'work-video-03.mp4',poster:'work-video-03.jpg',title:'Hotel bedroom woodwork',label:'GUEST ROOM · HEADBOARD & BEDSIDE FINISH',description:'A finished guest room with coordinated wall, headboard and bedside details.',service:'bedroom',duration:'00:58'},
+  {file:'work-video-04.mp4',poster:'work-video-04.jpg',title:'Arched partition detail',label:'ARCHED PARTITION · FEATURE WALL',description:'An on-site view of a decorative arched partition and feature wall.',service:'tv',duration:'00:19'},
+  {file:'work-video-05.mp4',poster:'work-video-05.jpg',title:'Sanjay Paras Hotel interiors',label:'SANJAY PARAS HOTEL · ROOM FINISHES',description:'A short walkthrough of hotel room woodwork and finishes.',service:'living',duration:'01:00'},
+  {file:'work-video-06.mp4',poster:'work-video-06.jpg',title:'Guest bedroom finishing',label:'BEDROOM · CUSTOM INTERIOR DETAILS',description:'A bedroom walkthrough showing wall finishes, storage and furniture details.',service:'bedroom',duration:'00:33'},
+];
 
 const menuToggle = document.querySelector('.menu-toggle');
 const nav = document.querySelector('#site-nav');
@@ -136,6 +144,96 @@ if (lightbox) {
     if (!lightbox.open) return;
     if (event.key === 'ArrowLeft') stepImage(-1);
     if (event.key === 'ArrowRight') stepImage(1);
+  });
+}
+
+function buildProjectVideo(item, index, preload = 'none') {
+  const video = document.createElement('video');
+  video.controls = true;
+  video.playsInline = true;
+  video.preload = preload;
+  video.poster = `/images/video-posters/${item.poster}`;
+  video.setAttribute('aria-label', `${item.title} video with audio`);
+  video.innerHTML = `<source src="/videos/${item.file}" type="video/mp4">Your browser does not support MP4 video.`;
+  return video;
+}
+
+const homeVideoCarousel = document.querySelector('#home-video-carousel');
+if (homeVideoCarousel) {
+  const stage = document.createElement('div');
+  stage.className = 'carousel-stage';
+  stage.tabIndex = 0;
+  stage.setAttribute('aria-label', 'Use left and right arrow keys to change video');
+  const slides = workVideos.map((item, index) => {
+    const slide = document.createElement('figure');
+    slide.className = 'video-frame carousel-slide';
+    slide.hidden = index !== 0;
+    const video = buildProjectVideo(item, index, index === 0 ? 'metadata' : 'none');
+    const caption = document.createElement('figcaption');
+    caption.textContent = `${String(index + 1).padStart(2, '0')} / ${String(workVideos.length).padStart(2, '0')}  ·  ${item.label}  ·  ${item.duration}`;
+    slide.append(video, caption);
+    stage.append(slide);
+    return slide;
+  });
+  const controls = document.createElement('div');
+  controls.className = 'carousel-controls';
+  controls.innerHTML = '<button class="carousel-arrow carousel-prev" type="button" aria-label="Previous video">←</button><div class="carousel-dots" role="group" aria-label="Choose project video"></div><span class="carousel-count" aria-live="polite">01 / 06</span><button class="carousel-arrow carousel-next" type="button" aria-label="Next video">→</button>';
+  const dots = controls.querySelector('.carousel-dots');
+  const dotButtons = workVideos.map((item, index) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'carousel-dot';
+    dot.setAttribute('aria-label', `Play ${item.title} video`);
+    dot.setAttribute('aria-pressed', String(index === 0));
+    dot.addEventListener('click', () => showSlide(index));
+    dots.append(dot);
+    return dot;
+  });
+  let activeSlide = 0;
+  function showSlide(index) {
+    activeSlide = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.hidden = slideIndex !== activeSlide;
+      if (slideIndex !== activeSlide) slide.querySelector('video').pause();
+    });
+    dotButtons.forEach((dot, dotIndex) => dot.setAttribute('aria-pressed', String(dotIndex === activeSlide)));
+    controls.querySelector('.carousel-count').textContent = `${String(activeSlide + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+  }
+  controls.querySelector('.carousel-prev').addEventListener('click', () => showSlide(activeSlide - 1));
+  controls.querySelector('.carousel-next').addEventListener('click', () => showSlide(activeSlide + 1));
+  stage.addEventListener('keydown', event => {
+    if (event.target.closest('video')) return;
+    if (event.key === 'ArrowLeft') showSlide(activeSlide - 1);
+    if (event.key === 'ArrowRight') showSlide(activeSlide + 1);
+  });
+  let touchStart = null;
+  stage.addEventListener('touchstart', event => { touchStart = event.changedTouches[0].clientX; }, {passive:true});
+  stage.addEventListener('touchend', event => {
+    if (touchStart === null) return;
+    const delta = event.changedTouches[0].clientX - touchStart;
+    if (Math.abs(delta) > 45) showSlide(activeSlide + (delta < 0 ? 1 : -1));
+    touchStart = null;
+  }, {passive:true});
+  homeVideoCarousel.append(stage, controls);
+}
+
+const videoGallery = document.querySelector('#video-gallery-grid');
+if (videoGallery) {
+  workVideos.forEach((item, index) => {
+    const card = document.createElement('article');
+    card.className = 'video-card';
+    const figure = document.createElement('figure');
+    figure.className = 'video-card-media';
+    figure.append(buildProjectVideo(item, index));
+    const caption = document.createElement('figcaption');
+    caption.innerHTML = `<span>VIDEO ${String(index + 1).padStart(2, '0')} · ${item.label}</span><h3>${item.title}</h3><p>${item.description}</p>`;
+    figure.append(caption);
+    const enquiry = document.createElement('a');
+    enquiry.className = 'project-enquiry';
+    enquiry.href = enquiryHref(item.title, item.service);
+    enquiry.innerHTML = '<span>Enquire about similar work</span><span aria-hidden="true">↗</span>';
+    card.append(figure, enquiry);
+    videoGallery.append(card);
   });
 }
 
